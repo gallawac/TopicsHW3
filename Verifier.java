@@ -10,8 +10,7 @@ public class Verifier
 	//initialize socket and input stream 
 	private Socket		 socket = null; 
 	private ServerSocket server = null; 
-	private DataInputStream in	 = null;
-	private DataOutputStream out = null;	
+	private ObjectInputStream in	 = null;	
 
 	// constructor with port 
 	public Verifier(int port) 
@@ -28,10 +27,9 @@ public class Verifier
 			System.out.println("Client accepted"); 
 
 			// takes input from the client socket 
-			in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-			out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			in = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
-			String line = "";
+			Message message;
 			String target = "1ABBC33775DF223A1ABBC33775DF223A1ABBC33775DF223A1ABBC33775DF223A";
 			BigInteger targ = new BigInteger(target, 16);
 
@@ -39,12 +37,17 @@ public class Verifier
 			try
 			{
 				String msg = "No";
-				line = in.readUTF(); 
-				System.out.println(line); 
-				if((new BigInteger(line, 16)).compareTo(targ) == -1){
-					msg = "Yes";
-				}
-				System.out.println(msg);
+				try
+				{ 
+					message = (Message) in.readObject();
+					String hash = message.getBlockHash();
+					System.out.println("Recieved hash of block: " + hash); 
+					if((new BigInteger(hash, 16)).compareTo(targ) == -1){
+						msg = "Yes";
+					}
+					System.out.println(msg);
+				} 
+				catch(ClassNotFoundException e){}
 			}
 		 
 			catch(IOException i) 

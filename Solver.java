@@ -8,8 +8,7 @@ public class Solver
 { 
 	// initialize socket and input output streams 
 	private Socket socket		 = null; 
-	private DataInputStream input = null; 
-	private DataOutputStream out	 = null; 
+	private ObjectOutputStream out	 = null; 
 
 	// constructor to put ip address and port 
 	public Solver(String address, int port) 
@@ -20,11 +19,8 @@ public class Solver
 			socket = new Socket(address, port); 
 			System.out.println("Connected"); 
 
-			// takes input from terminal 
-			input = new DataInputStream(System.in); 
-
 			// sends output to the socket 
-			out = new DataOutputStream(socket.getOutputStream()); 
+			out = new ObjectOutputStream(socket.getOutputStream()); 
 		} 
 		catch(UnknownHostException u) 
 		{ 
@@ -40,10 +36,10 @@ public class Solver
 		try
 		{ 
 			Block b = new Block(target);
-			//line = input.readLine();
+			Message msg = new Message(b);
 			String hash = b.getHashValue();
-			System.out.println("Block Sent to Verifer: " + hash);
-			out.writeUTF(hash);
+			System.out.println("Block's Hash: " + hash);
+			out.writeObject(msg);
 		} 
 		catch(IOException i) 
 		{ 
@@ -53,7 +49,6 @@ public class Solver
 		// close the connection 
 		try
 		{ 
-			input.close(); 
 			out.close(); 
 			socket.close(); 
 		} 

@@ -76,4 +76,8 @@ public class Block
 	public String getHashValue(){
 		return ( new Hash(newBlockHeader.toString()) ).toString();
 	}
+	
+	public BlockHeader getBlockHeader(){
+		return newBlockHeader;
+	}
 }
